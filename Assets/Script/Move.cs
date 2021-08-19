@@ -19,7 +19,8 @@ public class Move : MonoBehaviour
     void Update()
     {
         Move_2();
-        Mathf.Clamp(moveSpeed, -45.0f, 45.0f);
+        moveSpeed = Mathf.Clamp(moveSpeed, -45.0f, 45.0f);
+        Debug.Log("moveSpeed : " + moveSpeed);
         move();
     }
 
@@ -68,17 +69,19 @@ public class Move : MonoBehaviour
 
         if((moveSpeed > 0 || moveSpeed < 0) && (ret >= 89 || ret <= 91) )
         {
-            tar.transform.Rotate(Vector3.up * (ret - 90) * -1.0f);
-            tar2.transform.Rotate(Vector3.up * (ret - 90) * -1.0f);
-            transform.Rotate(Vector3.up * (ret - 90));
+        //    tar.transform.Rotate(Vector3.up * (ret - 90) * -1.0f);
+        //    tar2.transform.Rotate(Vector3.up * (ret - 90) * -1.0f);
+        //    transform.Rotate(Vector3.up * (ret - 90));
         }
 
 
-        this.transform.Translate(this.transform.forward * moveDelta);
+        this.transform.Translate(this.transform.right * moveDelta);
+
+        Debug.Log("Cartransform.forward : " + this.transform.right.x + this.transform.right.y
+             + this.transform.right.z);
 
 
-
-//        this.transform.Translate(dir);
+        //        this.transform.Translate(dir);
 
     }
 }

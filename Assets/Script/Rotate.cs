@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Rotate : MonoBehaviour
 {
-    float speed = Move.moveSpeed;
+    float speed = 0;
  //   int speed = 0;
     // Start is called before the first frame update
     void Start()
@@ -18,12 +18,16 @@ public class Rotate : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        speed = Move.moveSpeed;
         Rotate_1();
     }
 
     void Rotate_1()
     {
         float rot = speed * Time.deltaTime;
-        transform.rotation *= Quaternion.AngleAxis(speed, Vector3.back);
+        
+        //this.transform.Rotate(Vector3.up * rot);
+        this.transform.rotation *= Quaternion.AngleAxis(speed, Vector3.down );
+
     }
 }

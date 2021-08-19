@@ -28,40 +28,51 @@ public class Move_Rotate : MonoBehaviour
         float ret = Vector3.Angle(tirepos, carpos);
         if (Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKey(KeyCode.D))
         {
-            rotation += 0.2f;
+            rotation += 1f;
         }
         else if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A))
         {
-            rotation -= 0.2f;
+            rotation -= 1f;
         }
         else
-        {
-            if (rotation > 1)
-                rotation = -0.2f;
-            else if (rotation < 1)
-                rotation = 0.2f;
-            else
-                rotation = 0.0f;
-        }
+            rotation = 0.0f;
+
+        Debug.Log("rotation : " + rotation);
+
+        if (rotation >= 45)
+            rotation = 45.0f;
+        else if (rotation <= -45)
+            rotation = -45.0f;
+
+        Debug.Log("rotation : " + rotation);
+
 
     }
 
     void rotate()
     {
         float deltarot = rotation;
-        transform.rotation *= Quaternion.AngleAxis(deltarot, Vector3.right);
 
         GameObject tar = GameObject.Find("Car");
-        Vector3 carpos = tar.transform.eulerAngles;
+//        Vector3 carpos = tar.transform.eulerAngles;
         //Vector3 carpos = new Vector3(0,90,90);
-        Vector3 tirepos = this.transform.eulerAngles;
-        float ret = Vector3.Angle(this.transform.forward, tar.transform.forward);
+ //       Vector3 tirepos = this.transform.eulerAngles;
+        float ret = Vector3.Angle(this.transform.right
+            , tar.transform.right);
 
-        print(ret);
+        Debug.Log("angle : " + ret);
+        Debug.Log("rotation : " + rotation);
 
-        if(ret > 113 || ret < 50)
+ //       if(ret >= -45 && ret <= 45)
         {
-            transform.rotation *= Quaternion.AngleAxis(deltarot * -1.0f, Vector3.right);
+            transform.localRotation = Quaternion.AngleAxis(rotation, Vector3.forward);
+
+            ret = Vector3.Angle(this.transform.right
+            , tar.transform.right);
+            //if (ret < -45 || ret > 45)
+            //{
+            //    transform.localRotation = Quaternion.AngleAxis(rotation, Vector3.back);
+            //}
         }
     }
 }
