@@ -19,11 +19,12 @@ public class Move : MonoBehaviour
     void Update()
     {
         Move_2();
-        moveSpeed = Mathf.Clamp(moveSpeed, -45.0f, 45.0f);
+        moveSpeed = Mathf.Clamp(moveSpeed, -10.0f, 10.0f);
         Debug.Log("moveSpeed : " + moveSpeed);
+ //       rotate();
         move();
     }
-
+    
     void Move_1()
     {
 
@@ -43,42 +44,43 @@ public class Move : MonoBehaviour
             moveSpeed -= 0.2f;
         }
         else
-        {
-            if (moveSpeed > 0)
-                moveSpeed -= 0.1f;
-            else if (moveSpeed < 0)
-                moveSpeed += 0.1f;
-        }
+            moveSpeed = 0;
 
        
+    }
+
+    void rotate()
+    {
+        GameObject tar = GameObject.Find("Tire1");
+
+        float ret = Vector3.Angle(tar.transform.up, this.transform.forward);
+
+        Debug.Log("tar.transform.localRotation.z  : " + tar.transform.localRotation.z);
+
+        if (moveSpeed != 0)
+        {
+            //          this.transform.rotation *= Quaternion.AngleAxis(ret, Vector3.up);
+            if (tar.transform.localRotation.z > 0)
+            {
+                this.transform.rotation *= Quaternion.AngleAxis(ret, Vector3.up);
+            }
+            else if (tar.transform.localRotation.z < 0)
+            {
+                this.transform.rotation *= Quaternion.AngleAxis(ret, Vector3.down);
+            }
+        }
+
     }
 
     void move()
     {
         float moveDelta = moveSpeed * Time.deltaTime;
 
-        GameObject tar = GameObject.Find("Tire1");
-        GameObject tar2 = GameObject.Find("Tire3");
-        Vector3 carpos = tar.transform.eulerAngles;
-        //Vector3 carpos = new Vector3(0,90,90);
-        Vector3 tirepos = tar.transform.forward;
-        tirepos.y -= 90;
-        tirepos.z -= 90;
-        float ret = Vector3.Angle(tirepos, this.transform.forward);
         
+//        Debug.Log("tar.transform.rotation.y  : " + tar.transform.rotation.y);
 
-        if((moveSpeed > 0 || moveSpeed < 0) && (ret >= 89 || ret <= 91) )
-        {
-        //    tar.transform.Rotate(Vector3.up * (ret - 90) * -1.0f);
-        //    tar2.transform.Rotate(Vector3.up * (ret - 90) * -1.0f);
-        //    transform.Rotate(Vector3.up * (ret - 90));
-        }
+        this.transform.Translate(transform.transform.right * moveDelta);
 
-
-        this.transform.Translate(this.transform.right * moveDelta);
-
-        Debug.Log("Cartransform.forward : " + this.transform.right.x + this.transform.right.y
-             + this.transform.right.z);
 
 
         //        this.transform.Translate(dir);

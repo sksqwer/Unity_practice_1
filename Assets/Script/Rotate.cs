@@ -24,10 +24,6 @@ public class Rotate : MonoBehaviour
 
     void Rotate_1()
     {
-        float rot = speed * Time.deltaTime;
-        
-        //this.transform.Rotate(Vector3.up * rot);
         this.transform.rotation *= Quaternion.AngleAxis(speed, Vector3.down );
-
     }
 }

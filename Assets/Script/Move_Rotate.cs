@@ -23,28 +23,25 @@ public class Move_Rotate : MonoBehaviour
     void move_rotate()
     {
         GameObject tar = GameObject.Find("Car");
-        Vector3 carpos = tar.transform.position;
-        Vector3 tirepos = this.transform.position;
-        float ret = Vector3.Angle(tirepos, carpos);
+
+        float ret = Vector3.Angle(tar.transform.forward, this.transform.up);
         if (Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKey(KeyCode.D))
         {
-            rotation += 1f;
+            rotation += 0.1f;
         }
         else if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A))
         {
-            rotation -= 1f;
+            rotation -= 0.1f;
         }
         else
-            rotation = 0.0f;
-
-        Debug.Log("rotation : " + rotation);
+            rotation = 0;
+        
 
         if (rotation >= 45)
             rotation = 45.0f;
         else if (rotation <= -45)
             rotation = -45.0f;
-
-        Debug.Log("rotation : " + rotation);
+        
 
 
     }
@@ -54,25 +51,29 @@ public class Move_Rotate : MonoBehaviour
         float deltarot = rotation;
 
         GameObject tar = GameObject.Find("Car");
-//        Vector3 carpos = tar.transform.eulerAngles;
+        //        Vector3 carpos = tar.transform.eulerAngles;
         //Vector3 carpos = new Vector3(0,90,90);
- //       Vector3 tirepos = this.transform.eulerAngles;
-        float ret = Vector3.Angle(this.transform.right
-            , tar.transform.right);
+        //       Vector3 tirepos = this.transform.eulerAngles;
+        float ret = Vector3.Angle(tar.transform.forward, this.transform.up);
+        transform.localRotation = Quaternion.AngleAxis(rotation, Vector3.forward);
 
-        Debug.Log("angle : " + ret);
-        Debug.Log("rotation : " + rotation);
+        //       Debug.Log("angle : " + ret);
+        //       Debug.Log("rotation : " + rotation);
 
- //       if(ret >= -45 && ret <= 45)
-        {
-            transform.localRotation = Quaternion.AngleAxis(rotation, Vector3.forward);
+        //if (ret >= -45 && ret <= 45)
+        //{
+        //    float speed = Move.moveSpeed;
 
-            ret = Vector3.Angle(this.transform.right
-            , tar.transform.right);
-            //if (ret < -45 || ret > 45)
-            //{
-            //    transform.localRotation = Quaternion.AngleAxis(rotation, Vector3.back);
-            //}
-        }
+        //    if (rotation != 0)
+        //        transform.localRotation = Quaternion.AngleAxis(rotation, Vector3.forward);
+
+        //    //           this.transform.rotation *= Quaternion.AngleAxis(speed, Vector3.down);
+
+        //    ret = Vector3.Angle(tar.transform.forward, this.transform.up);
+        //    if (ret < -45 || ret > 45)
+        //    {
+        //        transform.localRotation = Quaternion.AngleAxis(rotation, Vector3.back);
+        //    }
+        //}
     }
 }
