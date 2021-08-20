@@ -5,23 +5,26 @@ using UnityEngine;
 public class Move : MonoBehaviour
 {
     //   public static int moveSpeed = 0;
-    public static float moveSpeed = 0;
+    public static float moveSpeed = 1000.0f;
+    public static float max_Speed = 5000.0f;
     public static float Body_rotation = 0;
+    Rigidbody rigidbody;
 
     // Start is called before the first frame update
     void Start()
     {
         //transform.position = new Vector3(0.0f, 3.0f, 0.0f);
-       // this.transform.Translate( new Vector3(0.0f, 3.0f, 0.0f));
+        // this.transform.Translate( new Vector3(0.0f, 3.0f, 0.0f));
+        rigidbody = gameObject.GetComponent<Rigidbody>();
     }
 
     // Update is called once per frame
     void Update()
     {
         Move_2();
-        moveSpeed = Mathf.Clamp(moveSpeed, -10.0f, 10.0f);
+        moveSpeed = Mathf.Clamp(moveSpeed, -max_Speed, max_Speed);
         Debug.Log("moveSpeed : " + moveSpeed);
- //       rotate();
+        rotate();
         move();
     }
     
@@ -37,11 +40,11 @@ public class Move : MonoBehaviour
     {
         if(Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKey(KeyCode.W))
         {
-            moveSpeed += 0.2f;
+            moveSpeed += 100f;
         }
         else if (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKey(KeyCode.S))
         {
-            moveSpeed -= 0.2f;
+            moveSpeed -= 100f;
         }
         else
             moveSpeed = 0;
@@ -57,16 +60,22 @@ public class Move : MonoBehaviour
 
         Debug.Log("tar.transform.localRotation.z  : " + tar.transform.localRotation.z);
 
-        if (moveSpeed != 0)
+        if (moveSpeed != 0 && ret != 0)
         {
             //          this.transform.rotation *= Quaternion.AngleAxis(ret, Vector3.up);
             if (tar.transform.localRotation.z > 0)
             {
-                this.transform.rotation *= Quaternion.AngleAxis(ret, Vector3.up);
+                if (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKey(KeyCode.S))
+                   this.transform.rotation *= Quaternion.AngleAxis(1, Vector3.up);
+                else
+                   this.transform.rotation *= Quaternion.AngleAxis(1, Vector3.down);
             }
             else if (tar.transform.localRotation.z < 0)
             {
-                this.transform.rotation *= Quaternion.AngleAxis(ret, Vector3.down);
+                if (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKey(KeyCode.S))
+                    this.transform.rotation *= Quaternion.AngleAxis(1, Vector3.down);
+                else
+                    this.transform.rotation *= Quaternion.AngleAxis(1, Vector3.up);
             }
         }
 
@@ -79,11 +88,24 @@ public class Move : MonoBehaviour
         
 //        Debug.Log("tar.transform.rotation.y  : " + tar.transform.rotation.y);
 
-        this.transform.Translate(transform.transform.right * moveDelta);
-
+  //      this.transform.Translate(Vector3.right * moveDelta);
+        if (rigidbody.velocity.magnitude < max_Speed)
+        {
+            float rot = moveSpeed * Time.deltaTime;
+            Vector3 forward = transform.right * rot;
+            forward.y = 0;
+            rigidbody.AddForce(forward);
+        }
 
 
         //        this.transform.Translate(dir);
 
+    }
+
+    void Move3()
+    {
+        float z = Input.GetAxis("Horizontal");
+        z = z * moveSpeed * Time.deltaTime;
+        gameObject.transform.Translate(Vector3.right * z);
     }
 }

@@ -5,7 +5,7 @@ using UnityEngine;
 public class RaycastEx : MonoBehaviour
 {
     [Range(0, 50)]
-    public float distance = 10.0f;
+    public float distance = 20.0f;
     private RaycastHit rayHit; // 구조체
     private RaycastHit[] rayHits; // 구조체
     private Ray ray;
@@ -140,7 +140,16 @@ public class RaycastEx : MonoBehaviour
 
         Debug.DrawRay(ray.origin, dir * dist, Color.blue);
 
+        rayHits = Physics.SphereCastAll(ray, 1.0f, distance);
+        for(int i = 0; i < rayHits.Length; i++)
+        {
+            if(rayHits[i].collider !=null)
+            {
+                //Destroy(rayHits[i].collider.gameObject);
 
+                rayHits[i].collider.gameObject.SetActive(false);
+            }
+        }
 
     }
 }

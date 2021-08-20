@@ -19,11 +19,35 @@ public class Rotate : MonoBehaviour
     void Update()
     {
         speed = Move.moveSpeed;
-        Rotate_1();
+        Rotate_1(); Rotate_2();
     }
 
     void Rotate_1()
     {
         this.transform.rotation *= Quaternion.AngleAxis(speed, Vector3.down );
+    }
+
+    void Rotate_2()
+    {
+        float y = Input.GetAxis("Horizontal");
+        y = y * speed * Time.deltaTime;
+        gameObject.transform.Rotate(new Vector3(0, y, 0));
+    }
+
+    void Rotate_3()
+    {
+        if(Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            Vector3 dir = new Vector3(10, 0, 0) - transform.position;
+            Vector3 dirXZ = new Vector3(dir.x, 0.0f, dir.z);
+
+            if(dirXZ != Vector3.zero)
+            {
+                Quaternion targetRot = Quaternion.LookRotation(dirXZ);
+                Quaternion frameRot = Quaternion.RotateTowards(transform.rotation,
+                    targetRot, speed * Time.deltaTime);
+                transform.rotation = frameRot;  
+            }
+        }
     }
 }
