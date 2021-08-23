@@ -10,7 +10,6 @@ public class Move_Rotate : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-
     }
 
     // Update is called once per frame
@@ -22,7 +21,7 @@ public class Move_Rotate : MonoBehaviour
 
     void move_rotate()
     {
-        GameObject tar = GameObject.Find("Car");
+        GameObject tar = GameObject.Find("Player_Car");
 
         float ret = Vector3.Angle(tar.transform.forward, this.transform.up);
 
@@ -56,9 +55,12 @@ public class Move_Rotate : MonoBehaviour
     {
         float deltarot = rotation;
 
-        GameObject tar = GameObject.Find("Car");
+        GameObject tar = GameObject.Find("Player_Car");
 
         float ret = Vector3.Angle(tar.transform.forward, this.transform.up);
         transform.localRotation = Quaternion.AngleAxis(rotation, Vector3.back);
     }
+
+
+
 }

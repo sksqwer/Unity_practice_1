@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class Auto_Move : MonoBehaviour
 {
-    public static float moveSpeed = 10.0f;
-    public static float max_Speed = 10.0f;
+    public static float moveSpeed = 20;
+    public static float max_Speed = 20;
     public float distance = 100.0f;
     private RaycastHit lrayHits; // 구조체
     private RaycastHit rrayHits; // 구조체
@@ -16,31 +16,25 @@ public class Auto_Move : MonoBehaviour
     Quaternion l45 = Quaternion.Euler(Vector3.up * 45);
     Quaternion r45 = Quaternion.Euler(Vector3.up * -45);
     Rigidbody rigidbody;
+    int _num;
+    static int n = 0;
+    bool start = true;
 
     private Transform wallTrans = null;
 
     // Start is called before the first frame update
     void Start()
     {
+        _num = n;
+        n++;
         wallTrans = GameObject.Find("Wall").transform;
         rigidbody = gameObject.GetComponent<Rigidbody>();
-        
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        lV = (Vector3.forward + Vector3.right).normalized;
-        rV = (Vector3.back + Vector3.right).normalized;
-        lV = (l45 * transform.right).normalized;
-        rV = (r45 * transform.right).normalized;
-
-        lray = new Ray(this.transform.position, lV);
-        rray = new Ray(this.transform.position, rV);
-       
-//        lV = transform.right;
-//        rV = transform.right;
-
         raycast();
         Rotate();
         move();
@@ -57,38 +51,45 @@ public class Auto_Move : MonoBehaviour
 
     void move()
     {
-        //if (rigidbody.velocity.magnitude < max_Speed)
-        //{
-        //    float rot = moveSpeed * Time.deltaTime;
-        //    rigidbody.AddForce(forward);
-        //}
-                float rot = moveSpeed * Time.deltaTime;
-        Vector3 forward = transform.right * rot;
-        forward.y = 0;
-        //transform.position.set(transform.position.x, 0.0f, transform.position.z);
+
+        float rot = moveSpeed * Time.deltaTime;
+        Vector3 forward = Vector3.right * rot;
+        forward.y = 0.0f;
+
         transform.Translate(forward);
+        if (moveSpeed < max_Speed)
+            moveSpeed++;
+
+        //        transform.position = new Vector3(transform.position.x, 0.5f, transform.position.z);
     }
 
     void Rotate()
     {
-        if(lrayHits.distance > rrayHits.distance)
+        if (lrayHits.distance > rrayHits.distance)
         {
-  //          transform.eulerAngles = new Vector3(0.0f, transform.rotation.y, 0.0f);
-
             this.transform.rotation *= Quaternion.AngleAxis(1, Vector3.up);
-       }
-        else if(lrayHits.distance < rrayHits.distance)
-        {
- //           transform.eulerAngles = new Vector3(0.0f, transform.rotation.y, 0.0f);
-
-            this.transform.rotation *= Quaternion.AngleAxis(1, Vector3.down);
- //           transform.eulerAngles = new Vector3(0.0f, transform.rotation.y, 0.0f);
         }
+        else if (lrayHits.distance < rrayHits.distance)
+        {
+            this.transform.rotation *= Quaternion.AngleAxis(1, Vector3.down);
+        }
+
+
+ //       this.transform.rotation = Quaternion.Euler(new Vector3(0.0f, transform.rotation.y, 0.0f));
+
     }
 
     void raycast()
     {
-        
+        lV = (Vector3.forward + Vector3.right).normalized;
+        rV = (Vector3.back + Vector3.right).normalized;
+        lV = (l45 * transform.right).normalized;
+        rV = (r45 * transform.right).normalized;
+
+        lray = new Ray(this.transform.position, lV);
+        rray = new Ray(this.transform.position, rV);
+
+
         if (Physics.Raycast(lray, out lrayHits, distance))
         {
             Debug.DrawRay(lray.origin, lV * lrayHits.distance, Color.red);
@@ -97,6 +98,54 @@ public class Auto_Move : MonoBehaviour
         {
             Debug.DrawRay(rray.origin, rV * rrayHits.distance, Color.red);
         }
-        
+
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        GameObject hitObject = collision.gameObject;
+        if (hitObject.tag != "Terrain" && hitObject.name != "Goalline")
+        {
+            this.transform.rotation = Quaternion.Euler(new Vector3(0.0f, transform.rotation.y, 0.0f));
+            transform.position = new Vector3(transform.position.x, 0.5f, transform.position.z);
+        }
+    }
+
+    private void OnCollisionExit(Collision collision)
+    {
+        GameObject hitObject = collision.gameObject;
+        if (hitObject.tag != "Terrain" && hitObject.name != "Goalline")
+        {
+            this.transform.rotation = Quaternion.Euler(new Vector3(0.0f, transform.rotation.y, 0.0f));
+            transform.position = new Vector3(transform.position.x, 0.5f, transform.position.z);
+        }
+    }
+    private void OnTriggerEnter(Collider other)
+    {
+        print(this.name);
+        if (start)
+        {
+            Gamemanager G = Gamemanager.Instance;
+            G.gameStartTime[_num] = Time.time;
+            G.playerName[_num] = this.name;
+            start = false;
+        }
+        else
+        {
+            Gamemanager G = Gamemanager.Instance;
+            G.gameEndTime[_num] = Time.time;
+            print(Gamemanager.score);
+            G.gameScore[_num] = Gamemanager.score;
+            Gamemanager.score -= 200;
+        }
+    }
+    private void OnTriggerStay(Collider other)
+    {
+
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+
     }
 }

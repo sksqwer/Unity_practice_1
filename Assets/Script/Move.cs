@@ -5,16 +5,17 @@ using UnityEngine;
 public class Move : MonoBehaviour
 {
     //   public static int moveSpeed = 0;
-    public static float moveSpeed = 1000.0f;
-    public static float max_Speed = 5000.0f;
+    public static float moveSpeed = 0.0f;
+    public static float max_Speed = 20.0f;
     public static float Body_rotation = 0;
     Rigidbody rigidbody;
+    bool start = true;
+    int _num;
 
     // Start is called before the first frame update
     void Start()
     {
-        //transform.position = new Vector3(0.0f, 3.0f, 0.0f);
-        // this.transform.Translate( new Vector3(0.0f, 3.0f, 0.0f));
+        _num = 3;
         rigidbody = gameObject.GetComponent<Rigidbody>();
     }
 
@@ -23,7 +24,7 @@ public class Move : MonoBehaviour
     {
         Move_2();
         moveSpeed = Mathf.Clamp(moveSpeed, -max_Speed, max_Speed);
-        Debug.Log("moveSpeed : " + moveSpeed);
+
         rotate();
         move();
     }
@@ -40,11 +41,11 @@ public class Move : MonoBehaviour
     {
         if(Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKey(KeyCode.W))
         {
-            moveSpeed += 100f;
+            moveSpeed += 1f;
         }
         else if (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKey(KeyCode.S))
         {
-            moveSpeed -= 100f;
+            moveSpeed -= 1f;
         }
         else
             moveSpeed = 0;
@@ -57,8 +58,7 @@ public class Move : MonoBehaviour
         GameObject tar = GameObject.Find("Tire1");
 
         float ret = Vector3.Angle(tar.transform.up, this.transform.forward);
-
-        Debug.Log("tar.transform.localRotation.z  : " + tar.transform.localRotation.z);
+        
 
         if (moveSpeed != 0 && ret != 0)
         {
@@ -77,6 +77,7 @@ public class Move : MonoBehaviour
                 else
                     this.transform.rotation *= Quaternion.AngleAxis(1, Vector3.up);
             }
+//            this.transform.rotation *= Quaternion.Euler(new Vector3(0.0f, transform.rotation.y, 0.0f));
         }
 
     }
@@ -84,21 +85,12 @@ public class Move : MonoBehaviour
     void move()
     {
         float moveDelta = moveSpeed * Time.deltaTime;
-
         
-//        Debug.Log("tar.transform.rotation.y  : " + tar.transform.rotation.y);
+        float rot = moveSpeed * Time.deltaTime;
+        Vector3 forward = Vector3.right * rot;
+        forward.y = 0.0f;
 
-  //      this.transform.Translate(Vector3.right * moveDelta);
-        if (rigidbody.velocity.magnitude < max_Speed)
-        {
-            float rot = moveSpeed * Time.deltaTime;
-            Vector3 forward = transform.right * rot;
-            forward.y = 0;
-            rigidbody.AddForce(forward);
-        }
-
-
-        //        this.transform.Translate(dir);
+        transform.Translate(forward);
 
     }
 
@@ -107,5 +99,57 @@ public class Move : MonoBehaviour
         float z = Input.GetAxis("Horizontal");
         z = z * moveSpeed * Time.deltaTime;
         gameObject.transform.Translate(Vector3.right * z);
+    }
+
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        GameObject hitObject = collision.gameObject;
+        if (hitObject.tag != "Terrain" && hitObject.name != "Goalline")
+        {
+            this.transform.rotation = Quaternion.Euler(new Vector3(0.0f, transform.rotation.y, 0.0f));
+            transform.position = new Vector3(transform.position.x, 0.5f, transform.position.z);
+        }
+    }
+
+    private void OnCollisionExit(Collision collision)
+    {
+        GameObject hitObject = collision.gameObject;
+        if (hitObject.tag != "Terrain" && hitObject.name != "Goalline")
+        {
+            this.transform.rotation = Quaternion.Euler(new Vector3(0.0f, transform.rotation.y, 0.0f));
+            transform.position = new Vector3(transform.position.x, 0.5f, transform.position.z);
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        print(this.name);
+        if (start)
+        {
+            start = false;
+
+            Gamemanager G = Gamemanager.Instance;
+            G.gameStartTime[_num] = Time.time;
+            G.playerName[_num] = this.name;
+        }
+        else
+        {
+            Gamemanager G = Gamemanager.Instance;
+            G.gameEndTime[_num] = Time.time;
+            print(Gamemanager.score);
+            G.gameScore[_num] = Gamemanager.score;
+            Gamemanager.score -= 200;
+        }
+    }
+
+    private void OnTriggerStay(Collider other)
+    {
+
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+
     }
 }
