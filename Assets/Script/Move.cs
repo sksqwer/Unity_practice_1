@@ -6,16 +6,18 @@ public class Move : MonoBehaviour
 {
     //   public static int moveSpeed = 0;
     public static float moveSpeed = 0.0f;
-    public static float max_Speed = 20.0f;
+    public static float max_Speed = 30.0f;
     public static float Body_rotation = 0;
     Rigidbody rigidbody;
-    bool start = true;
     int _num;
+    static int n = 0;
+    bool start = true;
 
     // Start is called before the first frame update
     void Start()
     {
-        _num = 3;
+        _num = n;
+        n++;
         rigidbody = gameObject.GetComponent<Rigidbody>();
     }
 
@@ -27,6 +29,7 @@ public class Move : MonoBehaviour
 
         rotate();
         move();
+        pos_set();
     }
     
     void Move_1()
@@ -101,24 +104,62 @@ public class Move : MonoBehaviour
         gameObject.transform.Translate(Vector3.right * z);
     }
 
+    void pos_set()
+    {
+        //    print("pre : " + transform.rotation.y);
+        if ((transform.rotation.x < -0.1f || transform.rotation.x > 0.1f) ||
+        (transform.rotation.z < -0.1f || transform.rotation.z > 0.1f))
+            this.transform.rotation = Quaternion.Euler(new Vector3(0.0f, transform.rotation.y, 0.0f));
+        // this.transform.rotation *= Quaternion.AngleAxis(1, new Vector3(-1 * transform.rotation.x, 0, -1 * transform.rotation.z));
+        //        this.transform.rotation = Quaternion.AngleAxis(0.0f, Vector3.forward) *
+        //           Quaternion.AngleAxis(transform.rotation.y, Vector3.up) *
+        //          Quaternion.AngleAxis(0.0f, Vector3.right);
+
+        if (transform.position.y != 0.5f)
+            transform.position = new Vector3(transform.position.x, 0.5f, transform.position.z);
+    //    print("post : " + transform.rotation.y);
+    }
 
     private void OnCollisionEnter(Collision collision)
     {
         GameObject hitObject = collision.gameObject;
         if (hitObject.tag != "Terrain" && hitObject.name != "Goalline")
         {
-            this.transform.rotation = Quaternion.Euler(new Vector3(0.0f, transform.rotation.y, 0.0f));
-            transform.position = new Vector3(transform.position.x, 0.5f, transform.position.z);
+            if (hitObject.tag == "Wall")
+            {
+                float rot = moveSpeed * Time.deltaTime; 
+                Vector3 forward = Vector3.left * rot;
+                forward.y = 0.0f;
+
+                transform.Translate(forward);
+            }
         }
     }
+
+    private void OnCollisionStay(Collision collision)
+    {
+        GameObject hitObject = collision.gameObject;
+        if (hitObject.tag != "Terrain" && hitObject.name != "Goalline")
+        {
+            if (hitObject.tag == "Wall")
+            {
+                float rot = moveSpeed * Time.deltaTime;
+                Vector3 forward = Vector3.left * rot;
+                forward.y = 0.0f;
+
+                transform.Translate(forward);
+            }
+        }
+    }
+
+
 
     private void OnCollisionExit(Collision collision)
     {
         GameObject hitObject = collision.gameObject;
         if (hitObject.tag != "Terrain" && hitObject.name != "Goalline")
         {
-            this.transform.rotation = Quaternion.Euler(new Vector3(0.0f, transform.rotation.y, 0.0f));
-            transform.position = new Vector3(transform.position.x, 0.5f, transform.position.z);
+
         }
     }
 
@@ -137,7 +178,7 @@ public class Move : MonoBehaviour
         {
             Gamemanager G = Gamemanager.Instance;
             G.gameEndTime[_num] = Time.time;
-            print(Gamemanager.score);
+            //       print(Gamemanager.score);
             G.gameScore[_num] = Gamemanager.score;
             Gamemanager.score -= 200;
         }

@@ -28,7 +28,7 @@ public class Gamemanager : MonoBehaviour
 
     //
     public static int num = 0;
-    public static long score = 50000;
+    public static long score = 100000;
 
     public long[] gameScore = new long[4];
     public float[] gameStartTime = new float[4];
@@ -56,8 +56,6 @@ public class Gamemanager : MonoBehaviour
         }
 
         SceneManager.LoadScene("Result_Scene");
-
-
 
     }
 }

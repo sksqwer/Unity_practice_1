@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
+
 
 public class Racing_Result : MonoBehaviour
 {
@@ -31,7 +33,6 @@ public class Racing_Result : MonoBehaviour
                         order[j] = temp;
                     }
                 }
-                print(n);
                 order[i] = n;
             }
         }
@@ -42,16 +43,24 @@ public class Racing_Result : MonoBehaviour
         temp += "4. " + g.playerName[order[3]] + " : " + g.gameScore[order[3]];
         
         print(temp);
-        //a.text = "Result\n" +
-        //    "1. " + g.playerName[order[0]] + " : " + g.gameScore[order[0]] + "\n" + 
-        //    "2. " + g.playerName[order[1]] + " : " + g.gameScore[order[1]] + "\n" + 
-        //    "3. " + g.playerName[order[2]] + " : " + g.gameScore[order[2]] + "\n" + 
-        //    "4. " + g.playerName[order[3]] + " : " + g.gameScore[order[3]] + "\n";
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+
+    }
+
+    private void OnGUI()
+    {
+        GUI.TextField(new Rect(450, 150, 200, 200), temp);
+
+
+        if (GUI.Button(new Rect(500, 400, 100, 30), "Exit"))
+        {
+            Debug.Log("Exit");
+
+            Application.Quit();
+        }
     }
 }

@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class Auto_Move : MonoBehaviour
 {
-    public static float moveSpeed = 20;
-    public static float max_Speed = 20;
-    public float distance = 100.0f;
+    public float moveSpeed = 20;
+    public float max_Speed = 30;
+    public float distance = 2000.0f;
     private RaycastHit lrayHits; // 구조체
     private RaycastHit rrayHits; // 구조체
     private Ray lray;
@@ -38,6 +38,7 @@ public class Auto_Move : MonoBehaviour
         raycast();
         Rotate();
         move();
+        pos_set();
     }
 
     private void DrawGizmos()
@@ -67,11 +68,11 @@ public class Auto_Move : MonoBehaviour
     {
         if (lrayHits.distance > rrayHits.distance)
         {
-            this.transform.rotation *= Quaternion.AngleAxis(1, Vector3.up);
+            this.transform.rotation *= Quaternion.AngleAxis(3, Vector3.up);
         }
         else if (lrayHits.distance < rrayHits.distance)
         {
-            this.transform.rotation *= Quaternion.AngleAxis(1, Vector3.down);
+            this.transform.rotation *= Quaternion.AngleAxis(3, Vector3.down);
         }
 
 
@@ -101,13 +102,49 @@ public class Auto_Move : MonoBehaviour
 
     }
 
+    void pos_set()
+    {
+        //   print("pre : " + transform.rotation.y);
+        if ((transform.rotation.x < -0.1f || transform.rotation.x > 0.1f) ||
+        (transform.rotation.z < -0.1f || transform.rotation.z > 0.1f))
+            this.transform.rotation = Quaternion.Euler(new Vector3(0.0f, transform.rotation.y, 0.0f));
+        //this.transform.rotation = Quaternion.Euler(new Vector3(0.0f, transform.rotation.y, 0.0f));
+
+        if (transform.position.y != 0.5f)
+            transform.position = new Vector3(transform.position.x, 0.5f, transform.position.z);
+     //   print("post : " + transform.rotation.y);
+    }
+
+
     private void OnCollisionEnter(Collision collision)
     {
         GameObject hitObject = collision.gameObject;
         if (hitObject.tag != "Terrain" && hitObject.name != "Goalline")
         {
-            this.transform.rotation = Quaternion.Euler(new Vector3(0.0f, transform.rotation.y, 0.0f));
-            transform.position = new Vector3(transform.position.x, 0.5f, transform.position.z);
+            if (hitObject.tag == "Wall")
+            {
+                float rot = moveSpeed * Time.deltaTime;
+                Vector3 forward = Vector3.left * rot;
+                forward.y = 0.0f;
+
+                transform.Translate(forward);
+            }
+        }
+    }
+
+    private void OnCollisionStay(Collision collision)
+    {
+        GameObject hitObject = collision.gameObject;
+        if (hitObject.tag != "Terrain" && hitObject.name != "Goalline")
+        {
+            if (hitObject.tag == "Wall")
+            {
+                float rot = moveSpeed * Time.deltaTime;
+                Vector3 forward = Vector3.left * rot;
+                forward.y = 0.0f;
+
+                transform.Translate(forward);
+            }
         }
     }
 
@@ -116,29 +153,31 @@ public class Auto_Move : MonoBehaviour
         GameObject hitObject = collision.gameObject;
         if (hitObject.tag != "Terrain" && hitObject.name != "Goalline")
         {
-            this.transform.rotation = Quaternion.Euler(new Vector3(0.0f, transform.rotation.y, 0.0f));
-            transform.position = new Vector3(transform.position.x, 0.5f, transform.position.z);
+
         }
     }
+
     private void OnTriggerEnter(Collider other)
     {
         print(this.name);
         if (start)
         {
+            start = false;
+
             Gamemanager G = Gamemanager.Instance;
             G.gameStartTime[_num] = Time.time;
             G.playerName[_num] = this.name;
-            start = false;
         }
         else
         {
             Gamemanager G = Gamemanager.Instance;
             G.gameEndTime[_num] = Time.time;
-            print(Gamemanager.score);
+            //       print(Gamemanager.score);
             G.gameScore[_num] = Gamemanager.score;
             Gamemanager.score -= 200;
         }
     }
+
     private void OnTriggerStay(Collider other)
     {
 
