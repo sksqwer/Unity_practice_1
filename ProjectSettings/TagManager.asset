@@ -9,6 +9,7 @@ TagManager:
   - Terrain
   - Wall
   - Pass
+  - Sword
   layers:
   - Default
   - TransparentFX
